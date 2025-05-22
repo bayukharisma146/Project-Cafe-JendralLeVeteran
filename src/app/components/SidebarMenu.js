@@ -58,6 +58,7 @@ export default function SidebarMenu({ show, onClose }) {
             ["/reservation", "RESERVATIONS"],
             ["/gallery", "GALLERY"],
             ["/contact", "CONTACT"],
+            ["/admin", "ADMIN"],
           ].map(([href, label]) => (
             <li key={href}>
               <Link
