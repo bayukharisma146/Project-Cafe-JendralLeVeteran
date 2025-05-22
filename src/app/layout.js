@@ -1,4 +1,7 @@
+
 import "./styles/globals.css";
+import Shell from "./components/Shell";
+
 
 export const metadata = {
   title: "Jendral Le Veteran",
@@ -8,8 +11,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-[hwb(0_10%_90%)] text-white min-h-screen flex flex-col">
-        {children}
+      <body className="bg-black text-white min-h-screen flex flex-col">
+        <Shell>{children}</Shell>
       </body>
     </html>
   );
