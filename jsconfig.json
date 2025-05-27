@@ -4,6 +4,6 @@
     "paths": {
       "@/*": ["*"]
     }
-  },
-  "include": ["src", "src/app/components"]
+  }
+  // "include": ["src", "src/app/components"]
 }
