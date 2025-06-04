@@ -1,32 +1,35 @@
-    "use client";
+"use client";
 
-    import { useState, useEffect } from "react";
-    import { getAuth } from "firebase/auth"; // firebase client SDK, pastikan sudah setup
+import { useState, useEffect } from "react";
+import { getAuth } from "firebase/auth"; // Pastikan Firebase client SDK sudah di-setup
 
-    export default function GalleryTabs({ activeTab, setActiveTab, isAdmin }) {
-    const [galleryData, setGalleryData] = useState({});
-    const [previewImage, setPreviewImage] = useState(null);
+export default function GalleryTabs({ activeTab, setActiveTab, isAdmin }) {
+const [galleryData, setGalleryData] = useState({});
+const [previewImage, setPreviewImage] = useState(null);
 
-    // Dapatkan token Firebase untuk Authorization header
-    const getIdToken = async () => {
+const getIdToken = async () => {
         const auth = getAuth();
         const user = auth.currentUser;
         if (!user) return null;
         return await user.getIdToken();
-    };
+};
 
-    const fetchGallery = async () => {
+const fetchGallery = async () => {
         const res = await fetch("/api/gallery");
         const data = await res.json();
         setGalleryData(data);
-    };
+};
 
     useEffect(() => {
         fetchGallery();
     }, []);
 
     const handleAddImage = async () => {
-        const newImage = "/image/food/food_new.jpg"; // contoh image url
+        if (galleryData[activeTab]?.length >= 6) {
+        return alert("Maksimal 6 gambar per kategori.");
+        }
+
+        const newImage = "/image/food/food_new.jpg"; // Ganti dengan image upload sebenarnya
 
         const token = await getIdToken();
         if (!token) return alert("You must be logged in!");
@@ -48,7 +51,6 @@
         }
     };
 
-    // Note: untuk hapus, butuh id bukan index
     const handleDeleteImage = async (id) => {
         const token = await getIdToken();
         if (!token) return alert("You must be logged in!");
@@ -103,7 +105,6 @@
 
         {/* Grid Gallery */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {/* Sekarang galleryData[activeTab] adalah array objek {id, image_url} */}
             {galleryData[activeTab]?.map(({ id, image_url }) => (
             <div
                 key={id}
@@ -151,4 +152,4 @@
         )}
         </>
     );
-    }
+}

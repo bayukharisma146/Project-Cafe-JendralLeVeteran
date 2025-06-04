@@ -66,7 +66,7 @@ export default function HomePage() {
         </div>
       </div>
       {/* Gambar kata1 di bawah konten utama */}
-      <div className="w-full rounded-xl overflow-hidden shadow-lg mt-6">
+      {/* <div className="w-full rounded-xl overflow-hidden shadow-lg mt-6">
         <Image
           src="/image/kata1.jpg"
           alt="Kata-kata motivasi"
@@ -74,7 +74,7 @@ export default function HomePage() {
           height={0}
           className="w-full h-auto object-contain"
         />
-      </div>
+      </div> */}
     </div>
   );
 }

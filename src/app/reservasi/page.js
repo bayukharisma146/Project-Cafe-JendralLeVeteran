@@ -16,18 +16,14 @@ import {
 } from "../../lib/firebase";
 
 export default function Reservasipage() {
-  // Form state
   const [people, setPeople] = useState("");
   const [room, setRoom] = useState("");
   const [time, setTime] = useState("");
   const [ampm, setAmpm] = useState("AM");
   const [date, setDate] = useState(null);
 
-  // Auth state
   const [user, setUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
-
-  // Login form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
@@ -50,7 +46,6 @@ export default function Reservasipage() {
     });
   };
 
-  // Google login
   const loginWithGoogle = async () => {
     try {
       await signInWithPopup(auth, provider);
@@ -59,7 +54,6 @@ export default function Reservasipage() {
     }
   };
 
-  // Email/password register or login
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -95,7 +89,6 @@ export default function Reservasipage() {
   return (
     <>
       <div className="flex flex-col md:flex-row min-h-screen bg-black text-white">
-        {/* Left Image Section */}
         <div className="relative w-full md:w-1/2 h-[400px] md:h-auto">
           <Image
             src="/image/reservation.jpg"
@@ -109,7 +102,6 @@ export default function Reservasipage() {
           </div>
         </div>
 
-        {/* Right Reservation Form */}
         <div className="w-full md:w-1/2 flex items-center justify-center p-10 bg-[#111]">
           <div className="w-full max-w-md">
             <h2 className="text-center text-2xl font-light mb-2 tracking-widest">
@@ -122,7 +114,7 @@ export default function Reservasipage() {
 
             {user && (
               <div className="mb-4 text-right text-sm text-gray-400">
-                Logged in as {user.email}{" "}
+                Logged in as {user.email}
                 <button
                   onClick={handleLogout}
                   className="underline hover:text-white ml-2"
@@ -147,19 +139,18 @@ export default function Reservasipage() {
                 className="w-full bg-transparent border border-gray-600 px-4 py-2 rounded-md outline-none focus:border-white"
                 required
               />
-              {/* Email manual dihilangkan karena ambil dari user yang login */}
+
               <div className="flex gap-2">
                 <input
                   type="number"
                   min={1}
                   max={20}
-                  placeholder="Jumlah orang"
+                  placeholder="People"
                   className="w-1/3 bg-transparent border border-gray-600 px-4 py-2 rounded-md outline-none focus:border-white"
                   value={people}
                   onChange={(e) => setPeople(e.target.value)}
                   required
                 />
-
                 <select
                   value={room}
                   onChange={(e) => setRoom(e.target.value)}
@@ -171,7 +162,7 @@ export default function Reservasipage() {
                   required
                 >
                   <option value="" disabled hidden>
-                    Pilih Ruangan
+                    Choose Room
                   </option>
                   <option value="vintage-room">Vintage Room</option>
                   <option value="indoor-smoking">Indoor Smoking</option>
@@ -180,51 +171,60 @@ export default function Reservasipage() {
                 </select>
               </div>
 
-              <div className="flex gap-2 items-center relative z-0">
-                {/* Date Picker */}
-                <DatePicker
-                  selected={date}
-                  onChange={setDate}
-                  minDate={new Date()}
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="Pilih Tanggal"
-                  className={`w-full bg-transparent border rounded-md px-4 py-2 outline-none focus:border-white ${
-                    date
-                      ? "text-white border-gray-600"
-                      : "text-gray-400 border-gray-600"
-                  }`}
-                  required
-                />
+              <div className="flex gap-2 w-full">
+                {/* Date */}
+                <div className="flex-1">
+                  <DatePicker
+                    selected={date}
+                    onChange={setDate}
+                    minDate={new Date()}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Date"
+                    className={`w-full bg-transparent border rounded-md px-4 py-2 outline-none focus:border-white ${
+                      date
+                        ? "text-white border-gray-600"
+                        : "text-gray-400 border-gray-600"
+                    }`}
+                    required
+                  />
+                </div>
+
+                {/* Time */}
+                <div className="w-[35%]">
+                  <input
+                    type="text"
+                    placeholder="Hour:Minute"
+                    pattern="^(0[1-9]|1[0-2]):([0-5][0-9])$"
+                    title="Format waktu harus HH:MM (01-12)"
+                    className={`w-full bg-transparent border rounded-md px-4 py-2 outline-none focus:border-white ${
+                      time
+                        ? "text-white border-gray-600"
+                        : "text-gray-400 border-gray-600"
+                    }`}
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    required
+                  />
+                </div>
+
+                {/* AM/PM */}
+                <div className="w-[25%]">
+                  <select
+                    value={ampm}
+                    onChange={(e) => setAmpm(e.target.value)}
+                    className={`w-full bg-black border rounded-md px-4 py-2 outline-none focus:border-white ${
+                      ampm
+                        ? "text-white border-gray-600"
+                        : "text-gray-400 border-gray-600"
+                    }`}
+                    required
+                  >
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
               </div>
-              {/* Time Input */}
-              <input
-                type="text"
-                placeholder="HH:MM"
-                pattern="^(0[1-9]|1[0-2]):([0-5][0-9])$"
-                title="Format waktu harus HH:MM (01-12) untuk 12 jam"
-                className={`w-1/3 bg-transparent border rounded-md px-4 py-2 outline-none focus:border-white ${
-                  time
-                    ? "text-white border-gray-600"
-                    : "text-gray-400 border-gray-600"
-                }`}
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                required
-              />
-              {/* AM/PM */}
-              <select
-                value={ampm}
-                onChange={(e) => setAmpm(e.target.value)}
-                className={`w-1/6 bg-black rounded-md px-2 py-2 outline-none focus:border-white border ${
-                  ampm
-                    ? "text-white border-gray-600"
-                    : "text-gray-400 border-gray-600"
-                }`}
-                required
-              >
-                <option value="AM">AM</option>
-                <option value="PM">PM</option>
-              </select>
+
               <button
                 type="submit"
                 className="w-full bg-[#f8f2dc] text-black font-semibold py-2 rounded-md hover:opacity-90 transition"
@@ -233,13 +233,11 @@ export default function Reservasipage() {
               </button>
             </form>
             <footer className="text-xs text-center text-gray-500 mt-8">
-              © CAFE JENDERAL · LICENSING · STYLEGUIDE
+              ©Jendral Le Veteran
             </footer>
           </div>
         </div>
       </div>
-
-      {/* Modal Login/Register */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
           <div className="bg-[#222] p-6 rounded-md w-full max-w-sm text-white">
