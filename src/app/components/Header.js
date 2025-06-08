@@ -1,90 +1,102 @@
-        "use client";
+"use client";
 
-        import Link from "next/link";
-        import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-        export default function Header() {
-        const pathname = usePathname();
+export default function Header() {
+  const pathname = usePathname();
 
-        // Kondisi apakah user sedang di halaman /menu
-        const isMenuPage = pathname.startsWith("/menu");
+  const isMenuPage = pathname.startsWith("/menu");
 
-        return (
-        <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
-            <nav className="flex items-center gap-6 bg-black/80 text-white px-4 py-2 rounded-2xl shadow-lg backdrop-blur-md">
-            {/* Logo */}
-            <Link href="/" className="text-lg tracking-widest font-semibold">
-                <span className="font-serif">JENDERAL</span>
-            </Link>
+  // Class untuk link:
+  // - Default: no background
+  // - Hover & focus & active: muncul bg gradient + shadow + timbul
+  const linkClass = `
+    px-3 py-1 rounded-md transition-all duration-200
+    hover:bg-gradient-to-b hover:from-white/10 hover:to-white/5
+    hover:shadow-lg hover:-translate-y-1
+    focus-visible:bg-gradient-to-b focus-visible:from-white/10 focus-visible:to-white/5
+    focus-visible:shadow-lg focus-visible:-translate-y-1
+    active:bg-gradient-to-b active:from-white/10 active:to-white/5
+    active:shadow-lg active:-translate-y-1
+  `;
 
-            {/* Menu Items */}
-            <div className="flex gap-4 ml-4 text-sm">
-                {isMenuPage ? (
-                // Tampilan menu khusus di halaman /menu
-                <>
-                    <Link href="/" className="hover:underline">
-                    HOME
-                    </Link> <span className="px-1 text-white/40">|</span>
+  return (
+    <header className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full px-4">
+      <nav className="flex items-center justify-center gap-6 bg-black/80 text-white px-6 py-3 rounded-2xl shadow-lg backdrop-blur-md overflow-x-auto no-scrollbar w-full max-w-6xl mx-auto">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="text-lg tracking-widest font-semibold shrink-0"
+        >
+          <span className="font-serif">JENDERAL</span>
+        </Link>
 
-                    <Link href="/menu#brunch" className="hover:underline">
-                    BRUNCH
-                    </Link> <span className="px-1 text-white/40">|</span>
-
-                    <Link href="/menu#snack" className="hover:underline">
-                    SNACK
-                    </Link> <span className="px-1 text-white/40">|</span>
-
-                    <Link href="/menu#soup" className="hover:underline">
-                    SOUP
-                    </Link> <span className="px-1 text-white/40">|</span>
-
-                    <Link href="/menu#oyster" className="hover:underline">
-                    OYSTER
-                    </Link> <span className="px-1 text-white/40">|</span>
-
-                    <Link href="/menu#pasta" className="hover:underline">
-                    PASTA
-                    </Link> <span className="px-1 text-white/40">|</span>
-
-                    <Link href="/menu#pizza" className="hover:underline">
-                    PIZZA
-                    </Link> <span className="px-1 text-white/40">|</span>
-
-                    <Link
-                    href="/menu#main-course" className="hover:underline whitespace-nowrap">
-                    MAIN COURSE
-                    </Link> <span className="px-1 text-white/40">|</span>
-
-                    <Link href="/menu#rice" className="hover:underline">
-                    RICE
-                    </Link> <span className="px-1 text-white/40">|</span>
-
-                    <Link href="/menu#dessert" className="hover:underline">
-                    DESSERT
-                    </Link> <span className="px-1 text-white/40">|</span>
-                    
-                    <Link href="/menu#drink" className="hover:underline">
-                    DRINK
-                    </Link>
-                </>
-                ) : (
-                // Tampilan default di halaman lain
-                <>
-                    <Link href="/" className="hover:underline">
-                    HOME
-                    </Link>
-                    <Link href="/menu" className="hover:underline">
-                    MENU
-                    </Link>
-                    <Link href="/reservasi">RESERVASI</Link>
-                    <Link href="/venue">VENUE</Link>
-                    <Link href="/gallery">GALLERY</Link>
-                    <Link href="/contact">CONTACT</Link>
-                    <Link href="/admin">ADMIN</Link>
-                </>
-                )}
-            </div>
-            </nav>
-        </header>
-    );
+        {/* Menu Items */}
+        <div className="flex gap-3 text-sm flex-nowrap overflow-x-auto no-scrollbar">
+          {isMenuPage ? (
+            <>
+              <Link href="/" className={linkClass}>
+                HOME
+              </Link>
+              <Link href="/menu/brunch" className={linkClass}>
+                BRUNCH
+              </Link>
+              <Link href="/menu/snack" className={linkClass}>
+                SNACK
+              </Link>
+              <Link href="/menu/soup" className={linkClass}>
+                SOUP
+              </Link>
+              <Link href="/menu/oyster" className={linkClass}>
+                OYSTER
+              </Link>
+              <Link href="/menu/pasta" className={linkClass}>
+                PASTA
+              </Link>
+              <Link href="/menu/pizza" className={linkClass}>
+                PIZZA
+              </Link>
+              <Link href="/menu/main-course" className={linkClass}>
+                MAIN COURSE
+              </Link>
+              <Link href="/menu/rice" className={linkClass}>
+                RICE
+              </Link>
+              <Link href="/menu/dessert" className={linkClass}>
+                DESSERT
+              </Link>
+              <Link href="/menu/drink" className={linkClass}>
+                DRINK
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/" className={linkClass}>
+                HOME
+              </Link>
+              <Link href="/menu" className={linkClass}>
+                MENU
+              </Link>
+              <Link href="/reservasi" className={linkClass}>
+                RESERVASI
+              </Link>
+              <Link href="/venue" className={linkClass}>
+                VENUE
+              </Link>
+              <Link href="/gallery" className={linkClass}>
+                GALLERY
+              </Link>
+              <Link href="/contact" className={linkClass}>
+                CONTACT
+              </Link>
+              <Link href="/admin" className={linkClass}>
+                ADMIN
+              </Link>
+            </>
+          )}
+        </div>
+      </nav>
+    </header>
+  );
 }

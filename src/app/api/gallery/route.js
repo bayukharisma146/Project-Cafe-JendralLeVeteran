@@ -1,7 +1,7 @@
 // src/app/api/gallery/route.js
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient"; // path sesuaikan dengan config supabase kamu
-import admin from "@/lib/firebaseAdmin";
+import { supabase } from "@/lib/supabaseClient"; // sesuaikan path
+import admin from "@/lib/firebaseAdmin"; // sesuaikan path
 
 // Verifikasi token Firebase
 async function verifyFirebaseUser(request) {
@@ -19,16 +19,17 @@ async function verifyFirebaseUser(request) {
 export async function GET() {
   const { data, error } = await supabase
     .from("gallery")
-    .select("*")
+    .select("id, tab, image_url")
     .order("created_at", { ascending: false });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Group data by tab, each tab berisi array objek {id, image_url}
   const grouped = data.reduce((acc, item) => {
     if (!acc[item.tab]) acc[item.tab] = [];
-    acc[item.tab].push(item.image_url);
+    acc[item.tab].push({ id: item.id, image_url: item.image_url });
     return acc;
   }, {});
 

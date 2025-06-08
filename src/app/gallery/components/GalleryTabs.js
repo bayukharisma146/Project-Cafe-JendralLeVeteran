@@ -1,24 +1,65 @@
-"use client";
+    "use client";
 
-import { useState, useEffect } from "react";
-import { getAuth } from "firebase/auth"; // Pastikan Firebase client SDK sudah di-setup
+    import { useState, useEffect } from "react";
+    import { getAuth } from "firebase/auth"; // Pastikan Firebase client SDK sudah di-setup
 
-export default function GalleryTabs({ activeTab, setActiveTab, isAdmin }) {
-const [galleryData, setGalleryData] = useState({});
-const [previewImage, setPreviewImage] = useState(null);
+    export default function GalleryTabs({ activeTab, setActiveTab, isAdmin }) {
+    const [galleryData, setGalleryData] = useState({});
+    const [previewImage, setPreviewImage] = useState(null);
 
-const getIdToken = async () => {
+    // Gambar default per tab
+    const defaultGallery = {
+        food: [
+            { id: "default-food-1", image_url: "/image/food/food1.jpg" },
+            { id: "default-food-2", image_url: "/image/food/food2.jpg" },
+            { id: "default-food-3", image_url: "/image/food/food3.jpg" },
+            { id: "default-food-4", image_url: "/image/food/food4.jpg" },
+            { id: "default-food-5", image_url: "/image/food/food5.jpg" },
+            { id: "default-food-6", image_url: "/image/food/food6.jpg" },
+            { id: "default-food-7", image_url: "/image/food/food7.jpg" },
+            { id: "default-food-8", image_url: "/image/food/food8.jpg" },
+            { id: "default-food-9", image_url: "/image/food/food9.jpg" },
+            { id: "default-food-10", image_url: "/image/food/food10.jpg" },
+            { id: "default-food-11", image_url: "/image/food/food11.jpg" },
+            { id: "default-food-12", image_url: "/image/food/food12.jpg" },
+            { id: "default-food-13", image_url: "/image/food/food13.jpg" },
+            { id: "default-food-14", image_url: "/image/food/food14.jpg" },
+            { id: "default-food-15", image_url: "/image/food/food15.jpg" },
+            { id: "default-food-16", image_url: "/image/food/food16.jpg" },
+            { id: "default-food-17", image_url: "/image/food/food17.jpg" },
+            { id: "default-food-18", image_url: "/image/food/food18.jpg" },
+            { id: "default-food-19", image_url: "/image/food/food19.jpg" },
+        ],
+        people: [
+            {id: "default-people-1",image_url: "/image/people/people1.jpg",},
+            {id: "default-people-2",image_url: "/image/people/people2.jpg",},
+            {id: "default-people-3",image_url: "/image/people/people3.jpg",},
+            {id: "default-people-4",image_url: "/image/people/people4.jpg",},
+            {id: "default-people-5",image_url: "/image/people/people5.jpg",},
+            {id: "default-people-6",image_url: "/image/people/people6.jpg",},
+            {id: "default-people-7",image_url: "/image/people/people7.jpg",},
+        ],
+        other: [
+            { id: "default-other-1", image_url: "/image/other/other1.jpg" },
+        ],
+    };
+
+    const getIdToken = async () => {
         const auth = getAuth();
         const user = auth.currentUser;
         if (!user) return null;
         return await user.getIdToken();
-};
+    };
 
-const fetchGallery = async () => {
+    const fetchGallery = async () => {
+        try {
         const res = await fetch("/api/gallery");
         const data = await res.json();
         setGalleryData(data);
-};
+        } catch (error) {
+        console.error("Failed to fetch gallery:", error);
+        }
+    };
 
     useEffect(() => {
         fetchGallery();
@@ -72,6 +113,12 @@ const fetchGallery = async () => {
         }
     };
 
+    // Pakai data dari galleryData jika ada, kalau tidak pakai defaultGallery
+    const imagesToShow =
+        galleryData[activeTab] && galleryData[activeTab].length > 0
+        ? galleryData[activeTab]
+        : defaultGallery[activeTab] || [];
+
     return (
         <>
         {/* Tabs */}
@@ -105,7 +152,7 @@ const fetchGallery = async () => {
 
         {/* Grid Gallery */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {galleryData[activeTab]?.map(({ id, image_url }) => (
+            {imagesToShow.map(({ id, image_url }) => (
             <div
                 key={id}
                 className="relative w-full aspect-[3/2] overflow-hidden rounded-xl shadow-lg cursor-pointer"
@@ -116,17 +163,18 @@ const fetchGallery = async () => {
                 alt={`${activeTab} image`}
                 className="absolute inset-0 w-full h-full object-cover"
                 />
-                {isAdmin && (
-                <button
+                {isAdmin &&
+                galleryData[activeTab]?.some((img) => img.id === id) && (
+                    <button
                     onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteImage(id);
+                        e.stopPropagation();
+                        handleDeleteImage(id);
                     }}
                     className="absolute top-2 right-2 bg-red-600 bg-opacity-80 text-white px-2 py-1 rounded-md text-xs hover:bg-red-700 transition"
                     aria-label="Hapus Gambar"
-                >
+                    >
                     &times;
-                </button>
+                    </button>
                 )}
             </div>
             ))}
@@ -152,4 +200,4 @@ const fetchGallery = async () => {
         )}
         </>
     );
-}
+    }
