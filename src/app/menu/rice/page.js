@@ -44,41 +44,50 @@ export default function RiceMenu() {
       {/* Modal Preview */}
       {modalItem && (
         <>
-          {/* Overlay hitam semi transparan */}
+          {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black bg-opacity-80 z-[9998]"
+            className="fixed inset-0 bg-black bg-opacity-90 z-[9998]"
             onClick={() => setModalItem(null)}
           />
 
-          {/* Tombol close, sedikit lebih bawah */}
-          <button
-            className="fixed top-12 right-6 z-[10000] text-white text-4xl font-bold hover:text-yellow-400"
-            onClick={() => setModalItem(null)}
-            aria-label="Close"
-          >
-            &times;
-          </button>
-
-          {/* Modal konten - pakai absolute supaya ikut scroll browser */}
+          {/* Modal Content */}
           <div
             className="absolute top-0 left-0 w-full z-[9999] p-8 flex justify-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="max-w-3xl w-full bg-neutral-900 rounded-xl p-6">
-              <Image
-                src={modalItem.mainImg}
-                alt={modalItem.alt}
-                width={800}
-                height={600}
-                className="rounded-lg mb-4 w-full"
-              />
-              <Image
-                src={modalItem.detailImg}
-                alt={`${modalItem.alt} detail`}
-                width={800}
-                height={600}
-                className="rounded-lg w-full"
-              />
+            <div className="relative max-w-5xl w-full bg-black rounded-xl">
+              {/* Close Button */}
+              <button
+                onClick={() => setModalItem(null)}
+                className="absolute top-4 right-4 text-white text-4xl font-bold hover:text-yellow-400 z-50"
+                aria-label="Close"
+              >
+                &times;
+              </button>
+
+              {/* Gambar Utama */}
+              <div className="mb-6 flex justify-center">
+                <Image
+                  src={modalItem.mainImg}
+                  alt={modalItem.alt}
+                  width={1200}
+                  height={1800}
+                  className="object-contain max-w-full max-h-[90vh] rounded-lg"
+                  priority
+                />
+              </div>
+
+              {/* Gambar Detail */}
+              <div className="flex justify-center">
+                <Image
+                  src={modalItem.detailImg}
+                  alt={`${modalItem.alt} detail`}
+                  width={1200}
+                  height={1800}
+                  className="object-contain max-w-full max-h-[90vh] rounded-lg"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </>

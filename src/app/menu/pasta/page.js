@@ -3,62 +3,82 @@
 import { useState } from "react";
 import Image from "next/image";
 
-export default function PastaMenu() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+// Data pasta
+const pastaItem = {
+  id: 1,
+  mainImg: "/image/pasta1.jpg",
+  detailImg: "/image/pasta1_det.jpg",
+  alt: "Pasta",
+};
 
-  const pastaImages = [
-    "/image/pasta1.jpg",
-    "/image/pasta1_det.jpg",
-  ];
+export default function PastaMenu() {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   return (
     <main className="min-h-screen bg-black text-white p-8 flex flex-col gap-12 relative">
-
-      {/* Preview (klik untuk buka modal) */}
+      {/* Thumbnail Pasta */}
       <div
-        className="cursor-pointer rounded-xl overflow-hidden shadow-lg max-w-4xl mx-auto"
-        onClick={() => setIsModalOpen(true)}
+        className="rounded-xl overflow-hidden shadow-lg cursor-pointer max-w-4xl mx-auto"
+        onClick={() => setIsPreviewOpen(true)}
       >
         <Image
-          src="/image/pasta1.jpg"
-          alt="Pasta Preview"
+          src={pastaItem.mainImg}
+          alt={pastaItem.alt}
           width={800}
           height={600}
           className="w-full h-auto object-cover rounded-xl"
+          priority
         />
       </div>
 
-      {/* Modal */}
-      {isModalOpen && (
+      {/* Modal Preview */}
+      {isPreviewOpen && (
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black bg-opacity-80 z-40"
-            onClick={() => setIsModalOpen(false)}
+            className="fixed inset-0 bg-black bg-opacity-90 z-[9998]"
+            onClick={() => setIsPreviewOpen(false)}
           />
 
-          {/* Modal content */}
-          <div className="relative z-50 max-w-4xl mx-auto px-4 pt-24">
-            {/* Tombol Tutup */}
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="fixed top-4 right-6 text-white text-3xl font-bold z-50 hover:text-red-500"
-              aria-label="Close"
-            >
-              &times;
-            </button>
+          {/* Modal Content */}
+          <div
+            className="absolute top-0 left-0 w-full z-[9999] p-8 flex justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative max-w-5xl w-full bg-black rounded-xl">
+              {/* Close Button */}
+              <button
+                onClick={() => setIsPreviewOpen(false)}
+                className="absolute top-4 right-4 text-white text-4xl font-bold hover:text-yellow-400 z-50"
+                aria-label="Close"
+              >
+                &times;
+              </button>
 
-            {pastaImages.map((src, index) => (
-              <div key={index} className="mb-6">
+              {/* Gambar Utama */}
+              <div className="mb-6 flex justify-center">
                 <Image
-                  src={src}
-                  alt={`Pasta Detail ${index + 1}`}
-                  width={1000}
-                  height={700}
-                  className="w-full h-auto object-cover rounded-lg"
+                  src={pastaItem.mainImg}
+                  alt={pastaItem.alt}
+                  width={1200}
+                  height={1800}
+                  className="object-contain max-w-full max-h-[90vh] rounded-lg"
+                  priority
                 />
               </div>
-            ))}
+
+              {/* Gambar Detail */}
+              <div className="flex justify-center">
+                <Image
+                  src={pastaItem.detailImg}
+                  alt={`${pastaItem.alt} detail`}
+                  width={1200}
+                  height={1800}
+                  className="object-contain max-w-full max-h-[90vh] rounded-lg"
+                  priority
+                />
+              </div>
+            </div>
           </div>
         </>
       )}

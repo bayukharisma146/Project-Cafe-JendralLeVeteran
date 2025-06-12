@@ -1,6 +1,5 @@
 // src/app/api/gallery/route.js
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient"; // sesuaikan path
 import admin from "@/lib/firebaseAdmin"; // sesuaikan path
 
 // Verifikasi token Firebase
@@ -16,18 +15,15 @@ async function verifyFirebaseUser(request) {
   }
 }
 
+// Dummy data untuk contoh (karena Supabase dihapus)
+const dummyGallery = [
+  { id: 1, tab: "food", image_url: "/image/gallery1.jpg" },
+  { id: 2, tab: "drink", image_url: "/image/gallery2.jpg" },
+];
+
 export async function GET() {
-  const { data, error } = await supabase
-    .from("gallery")
-    .select("id, tab, image_url")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
   // Group data by tab, each tab berisi array objek {id, image_url}
-  const grouped = data.reduce((acc, item) => {
+  const grouped = dummyGallery.reduce((acc, item) => {
     if (!acc[item.tab]) acc[item.tab] = [];
     acc[item.tab].push({ id: item.id, image_url: item.image_url });
     return acc;
@@ -47,16 +43,15 @@ export async function POST(request) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }
 
-  const { data, error } = await supabase
-    .from("gallery")
-    .insert([{ tab, image_url: image }])
-    .select();
+  // Simulasi insert ke dummy data
+  const newItem = {
+    id: Date.now(),
+    tab,
+    image_url: image,
+  };
+  dummyGallery.push(newItem);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  return NextResponse.json({ message: "Image added", data });
+  return NextResponse.json({ message: "Image added", data: newItem });
 }
 
 export async function DELETE(request) {
@@ -70,11 +65,12 @@ export async function DELETE(request) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }
 
-  const { error } = await supabase.from("gallery").delete().eq("id", id);
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  // Simulasi hapus dari dummy data
+  const idx = dummyGallery.findIndex((item) => item.id === id);
+  if (idx !== -1) {
+    dummyGallery.splice(idx, 1);
+    return NextResponse.json({ message: "Image deleted" });
+  } else {
+    return NextResponse.json({ error: "Image not found" }, { status: 404 });
   }
-
-  return NextResponse.json({ message: "Image deleted" });
 }
