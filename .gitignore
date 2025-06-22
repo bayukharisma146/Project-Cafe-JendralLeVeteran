@@ -32,7 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+<<<<<<< HEAD
 .env
+=======
+>>>>>>> d9b9e6fd164146f209b9f394e9a83ef33bc34a0d
 
 # Allow local env file for development
 !.env.local
@@ -44,5 +47,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+<<<<<<< HEAD
 src/.env.local
 src/.env.local
+=======
+>>>>>>> d9b9e6fd164146f209b9f394e9a83ef33bc34a0d

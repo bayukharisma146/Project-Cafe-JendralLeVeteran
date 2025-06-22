@@ -2,19 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { auth, onAuthStateChanged, signOut } from "../../lib/firebase";
-import Link from "next/link";
+import GalleryTabs from "../gallery/components/GalleryTabs";
 
 export default function AdminPage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("food");
 
+  // cek auth state saat component mount
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser?.email === "jendralleveteran@gmail.com") {
-        setUser(currentUser);
+      if (currentUser) {
+        if (currentUser.email === "jendralleveteran@gmail.com") {
+          setUser(currentUser);
+        } else {
+          setUser(null); // user bukan admin
+          alert("Unauthorized user");
+        }
       } else {
-        setUser(null);
-        alert("Unauthorized user");
+        setUser(null); // belum login
       }
       setLoading(false);
     });
@@ -22,6 +28,7 @@ export default function AdminPage() {
     return () => unsubscribe();
   }, []);
 
+  // fungsi logout
   const handleLogout = async () => {
     await signOut(auth);
     setUser(null);
@@ -31,6 +38,7 @@ export default function AdminPage() {
     return <div className="text-white text-center">Loading...</div>;
   }
 
+  // Jika belum login / user tidak ada
   if (!user) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col justify-center items-center p-6">
@@ -54,10 +62,10 @@ export default function AdminPage() {
     );
   }
 
+  // Jika sudah login dan user adalah admin
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <button
           onClick={handleLogout}
           className="bg-red-600 px-4 py-2 rounded hover:bg-red-700"
@@ -66,24 +74,11 @@ export default function AdminPage() {
         </button>
       </div>
 
-      {/* Panel Navigasi Admin */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <AdminCard title="Kelola Galeri" href="/gallery"/>
-        <AdminCard title="Kategori Brunch" href="/menu/brunch"/>
-        <AdminCard title="Reservasi" href="/admin/reservasi"/>
-      </div>
+      <GalleryTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isAdmin={true}
+      />
     </div>
-  );
-}
-
-// Fungsi AdminCard harus di luar komponen utama
-function AdminCard({ title, href, icon }) {
-  return (
-    <Link href={href}>
-      <div className="bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition duration-300 cursor-pointer">
-        <div className="text-3xl mb-2">{icon}</div>
-        <h3 className="text-xl font-semibold">{title}</h3>
-      </div>
-    </Link>
   );
 }

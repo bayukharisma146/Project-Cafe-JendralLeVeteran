@@ -1,81 +1,76 @@
-// app/api/gallery/route.js
-import { cert, getApps, initializeApp } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
-import { S3 } from "aws-sdk";
+// src/app/api/gallery/route.js
 import { NextResponse } from "next/server";
+import admin from "@/lib/firebaseAdmin"; // sesuaikan path
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
-// Inisialisasi Firebase Admin
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    }),
-  });
-}
-
-const db = getFirestore();
-
-// Inisialisasi AWS S3
-const s3 = new S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
-
-// ✅ GET - Ambil data galeri
-export async function GET() {
+// Verifikasi token Firebase
+async function verifyFirebaseUser(request) {
+  const authHeader = request.headers.get("authorization") || "";
+  if (!authHeader.startsWith("Bearer ")) return null;
+  const idToken = authHeader.split("Bearer ")[1];
   try {
-    const snapshot = await db.collection("gallery").get();
-    const grouped = {};
-
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      if (!grouped[data.tab]) grouped[data.tab] = [];
-      grouped[data.tab].push({ id: doc.id, ...data });
-    });
-
-    return NextResponse.json(grouped);
-  } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    return decodedToken;
+  } catch (error) {
+    return null;
   }
 }
 
-// ✅ DELETE - Hapus gambar dari S3 dan Firestore
-export async function DELETE(req) {
-  try {
-    const body = await req.json();
-    const { id } = body;
+// Dummy data untuk contoh (karena Supabase dihapus)
+const dummyGallery = [
+  { id: 1, tab: "food", image_url: "/image/gallery1.jpg" },
+  { id: 2, tab: "drink", image_url: "/image/gallery2.jpg" },
+];
 
-    if (!id) {
-      return NextResponse.json({ error: "Missing ID" }, { status: 400 });
-    }
+export async function GET() {
+  // Group data by tab, each tab berisi array objek {id, image_url}
+  const grouped = dummyGallery.reduce((acc, item) => {
+    if (!acc[item.tab]) acc[item.tab] = [];
+    acc[item.tab].push({ id: item.id, image_url: item.image_url });
+    return acc;
+  }, {});
 
-    const docRef = db.collection("gallery").doc(id);
-    const doc = await docRef.get();
+  return NextResponse.json(grouped);
+}
 
-    if (!doc.exists) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
+export async function POST(request) {
+  const user = await verifyFirebaseUser(request);
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { image_url } = doc.data();
-    const key = new URL(image_url).pathname.slice(1);
+  const { tab, image } = await request.json();
 
-    await s3
-      .deleteObject({
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: key,
-      })
-      .promise();
+  if (!tab || !image) {
+    return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+  }
 
-    await docRef.delete();
+  // Simulasi insert ke dummy data
+  const newItem = {
+    id: Date.now(),
+    tab,
+    image_url: image,
+  };
+  dummyGallery.push(newItem);
 
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  return NextResponse.json({ message: "Image added", data: newItem });
+}
+
+export async function DELETE(request) {
+  const user = await verifyFirebaseUser(request);
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id } = await request.json();
+
+  if (!id) {
+    return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+  }
+
+  // Simulasi hapus dari dummy data
+  const idx = dummyGallery.findIndex((item) => item.id === id);
+  if (idx !== -1) {
+    dummyGallery.splice(idx, 1);
+    return NextResponse.json({ message: "Image deleted" });
+  } else {
+    return NextResponse.json({ error: "Image not found" }, { status: 404 });
   }
 }

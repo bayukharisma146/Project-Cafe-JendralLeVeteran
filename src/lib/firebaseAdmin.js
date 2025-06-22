@@ -1,23 +1,15 @@
-// src/lib/firebaseAdmin.js
-import { initializeApp, cert, getApps } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
-import { getFirestore } from "firebase-admin/firestore";
+import admin from "firebase-admin";
 
 // Cegah inisialisasi ganda
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      // Penting: replace '\\n' dengan newline agar privateKey valid
       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
     }),
   });
 }
-
-// Ekspor objek admin dengan auth & db
-const admin = {
-  auth: getAuth(),
-  db: getFirestore(),
-};
 
 export default admin;
